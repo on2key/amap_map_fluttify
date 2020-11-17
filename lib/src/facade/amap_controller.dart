@@ -914,7 +914,8 @@ mixin _Community on _Holder {
   /// 批量添加marker
   ///
   /// 根据[options]批量创建Marker
-  Future<List<Marker>> addMarkers(List<MarkerOption> options) async {
+  /// 添加showAll属性：用来标识是否显示所有Markers
+  Future<List<Marker>> addMarkers(List<MarkerOption> options,{bool showAll = false}) async {
     assert(options != null);
     assert(state.context != null, '当前context为null!');
 
@@ -980,7 +981,7 @@ mixin _Community on _Holder {
         }
 
         // 添加marker
-        final markers = await androidMap.addMarkers(markerOptionBatch, false);
+        final markers = await androidMap.addMarkers(markerOptionBatch, showAll);
 
         // 弹窗使能
         await markers.setInfoWindowEnable_batch(infoWindowEnabledBatch);
@@ -1029,6 +1030,9 @@ mixin _Community on _Holder {
 
         // 添加marker
         await iosController.addAnnotations(annotationBatch);
+        if (showAll) {
+          await iosController.showAnnotations_animated(annotationBatch, true);
+        }
 
         pool.addAll(coordinateBatch);
         return [
